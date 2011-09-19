@@ -1,17 +1,16 @@
 #!/usr/bin/python
 
-# SOFTENG 206 Assignment 2
-# Andrew Luey (alue004)
-# ID#: 1507807
-# Date: August 2011
+# SOFTENG 206 Assignment 3
+# Andrew Luey and Arunim Talwar
+# Date: September 2011
 
 
 from os import killpg, setsid, getpgid
 from subprocess import Popen, PIPE
 from signal import signal, SIGKILL
 from functools import partial
-from Tkinter import *
-from ttk import Combobox
+from Tkinter import Tk, Frame, Button, Listbox, OptionMenu, Scrollbar,
+                    StringVar
 
 
 # Speech functions
@@ -31,22 +30,22 @@ def restartFest():
     
 def CreateButton(parent, x, y, txt, fn, colour):
     """ Button which runs the function fn when pressed """
-    btn = Button(parent, text=txt, command=fn, bg=colour, width=20)
-    btn.grid(column=x, row=y, sticky="w", padx=10, pady=4)
+    btn = Button(parent, text=txt, command=fn, bg=colour, width=10)
+    btn.grid(column=x, row=y)
     return btn
 
-def CreateCombo(parent, x, y, val, elements):
-    """ Listbox to show the spelling list """
-    combo = Combobox(root, textvariable=val, values=elements)
-    combo.grid(column=10, columnspan=2, row=10, sticky="s")
-    return combo
+def CreateOptionMenu(parent, x, y, val, var):
+    """ Option menu to show the spelling list """
+    optMenu = OptionMenu(parent, val, *var)
+    optMenu.grid(column=x, row=y, columnspan=2, sticky="ew")
+    return optMenu
     
 def CreateListBox(parent, x, y, val):
     """ Listbox to show the spelling list """
     lstbox = Listbox(parent, listvariable=val, selectmode="extended")
-    lstbox.grid(column=x, row=y, rowspan=30, sticky="ns")
+    lstbox.grid(column=x, row=y)
     sbar = Scrollbar(parent, orient="vertical", command=lstbox.yview)
-    sbar.grid(column=x+1, row=y, rowspan=30, sticky="ns")
+    sbar.grid(column=x+1, row=y, sticky="ns")
     lstbox['yscrollcommand'] = sbar.set
     return lstbox
 
@@ -61,7 +60,9 @@ proc.stdin.write("(audio_mode 'async)\n")
 
 # Initialise GUI
 root = Tk()
-root.title("<INSERT TITLE HERE>")
+root.title("Teacher Interface")
+listFrame = Frame(root, width=200, height=200)
+listFrame.grid(column=0, row=0, padx=10, pady=10)
 
 # Word lists
 listNames = ["Child", "ESOL", "BEE"]
@@ -70,30 +71,30 @@ esolList = ("digger", "emu", "fish")
 beeList = ("goat", "ho", "igloo")
 
 # Listbox
-wordList = StringVar(value=esolList)
-CreateListBox(root, 10, 11, wordList)
+wordList = StringVar()
+CreateListBox(listFrame, 0, 1, wordList)
 
 # Combobox
-currentListName = StringVar()
-combo = CreateCombo(root, 10, 10, currentListName, listNames)
+currentListName = StringVar(value="Please select a list")
+optMenu = CreateOptionMenu(listFrame, 0, 0, currentListName, listNames)
 #combo.bind('<Child>', lambda: speak("this function will speak any add a new list to the combobox"))
 #combo.bind('ESOL', partial(ChangeWordList,esolList))
 #combo.bind('BEE', lambda: ChangeWordList(beeList))
 
 # List buttons
-CreateButton(root, 20, 11, "Create list", lambda: speak("this function will speak any add a new list to the combobox"), colour="yellow")
-CreateButton(root, 20, 12, "Remove list", lambda: speak("this function will speak any remove a list from the combobox"), colour="yellow")
-CreateButton(root, 20, 13, "Import list", lambda: speak("this function will speak import a tldr file"), colour="yellow")
-CreateButton(root, 20, 14, "Export list", lambda: speak("this function will speak write a list to a tldr file"), colour="yellow")
+#CreateButton(root, 20, 11, "Create list", lambda: speak("this function will speak any add a new list to the combobox"), colour="yellow")
+#CreateButton(root, 20, 12, "Remove list", lambda: speak("this function will speak any remove a list from the combobox"), colour="yellow")
+#CreateButton(root, 20, 13, "Import list", lambda: speak("this function will speak import a tldr file"), colour="yellow")
+#CreateButton(root, 20, 14, "Export list", lambda: speak("this function will speak write a list to a tldr file"), colour="yellow")
 
 # Word buttons
-CreateButton(root, 20, 21, "Add word", lambda: speak("this function will add a word to the list"), colour="green")
-CreateButton(root, 20, 22, "Remove word", lambda: speak("this function will remove a word from the list"), colour="green")
-CreateButton(root, 20, 23, "Add words from another list", lambda: speak("this function will allow you to add words from other lists"), colour="green")
+#CreateButton(root, 20, 21, "Add word", lambda: speak("this function will add a word to the list"), colour="green")
+#CreateButton(root, 20, 22, "Remove word", lambda: speak("this function will remove a word from the list"), colour="green")
+#CreateButton(root, 20, 23, "Add words from another list", lambda: speak("this function will allow you to add words from other lists"), colour="green")
 
 # Speech buttons
-CreateButton(root, 20, 31, "Speak selected", lambda: speak("this function will speak any selected words"), colour="red")
-CreateButton(root, 20, 32, "Speak all", lambda: speak("this function will speak all the words"), colour="red")
-CreateButton(root, 20, 33, "Stop speech", restartFest, colour="red")
+CreateButton(listFrame, 0, 2, "Speak selected", lambda: speak("this function will speak any selected words"), colour="red")
+CreateButton(listFrame, 0, 3, "Speak all", lambda: speak("this function will speak all the words"), colour="red")
+CreateButton(listFrame, 0, 4, "Stop speech", restartFest, colour="red")
 
 root.mainloop()
